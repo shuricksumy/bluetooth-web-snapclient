@@ -76,9 +76,21 @@ jobs:
 
       # REFRESH_WEEK changes every ISO week so the scheduled rebuild really
       # re-runs apt-get upgrade instead of restoring a stale layer from the cache.
-      - name: Resolve cache epoch
+      # The Snapcast tag is resolved here too: with the default "latest" the
+      # fetch stage's cache key never changes, so a new Snapcast release would
+      # never replace the cached package. Pinning it busts that stage the day
+      # upstream ships, and the authenticated call stays off the rate limit.
+      - name: Resolve build inputs
         id: inputs
-        run: echo "refresh_week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          snapcast="$(gh api repos/snapcast/snapcast/releases/latest --jq .tag_name)"
+          week="$(date -u +%G-W%V)"
+          echo "snapcast_version=$snapcast" >> "$GITHUB_OUTPUT"
+          echo "refresh_week=$week" >> "$GITHUB_OUTPUT"
+          echo "Snapcast $snapcast | cache epoch $week"
 
       - name: Docker metadata
         id: meta
@@ -100,6 +112,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           platforms: linux/amd64,linux/arm64
           build-args: |
+            SNAPCAST_VERSION=${{ steps.inputs.outputs.snapcast_version }}
             REFRESH_WEEK=${{ steps.inputs.outputs.refresh_week }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
