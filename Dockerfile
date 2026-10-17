@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
 
 # --- Stage 0: fetch the Snapcast packages from the upstream GitHub release ---
 # Same approach as shuricksumy/pipewire-snapclient: runs on the build host (not
@@ -6,7 +6,7 @@
 # sha256 digest the GitHub API publishes. The "with-pipewire" variant is the one
 # that matters -- the plain package installs cleanly and then rejects
 # "--player pipewire" only at runtime.
-FROM --platform=$BUILDPLATFORM debian:trixie-slim AS snapcast
+FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS snapcast
 
 ARG TARGETARCH
 ARG SNAPCAST_VERSION=latest
@@ -37,7 +37,7 @@ RUN set -eu; \
 
 
 # --- Stage 1: runtime ---
-FROM debian:trixie-slim
+FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
 
 ARG REFRESH_WEEK=0
 
