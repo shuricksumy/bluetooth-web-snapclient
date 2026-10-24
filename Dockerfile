@@ -6,7 +6,7 @@
 # sha256 digest the GitHub API publishes. The "with-pipewire" variant is the one
 # that matters -- the plain package installs cleanly and then rejects
 # "--player pipewire" only at runtime.
-FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f AS snapcast
+FROM --platform=$BUILDPLATFORM debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad AS snapcast
 
 ARG TARGETARCH
 ARG SNAPCAST_VERSION=latest
@@ -37,7 +37,7 @@ RUN set -eu; \
 
 
 # --- Stage 1: runtime ---
-FROM debian:trixie-slim@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f
+FROM debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
 
 ARG REFRESH_WEEK=0
 
